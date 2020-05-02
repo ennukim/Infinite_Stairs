@@ -1,0 +1,3 @@
+﻿  Util.cpp
+D:\Spring 2020\Game Programming\Week 13 - UI in 3D\Util.cpp(35,22): warning C4018: '<': signed/unsigned mismatch
+  SDLProject.vcxproj -> D:\Spring 2020\Game Programming\Week 13 - UI in 3D\Debug\SDLProject.exe
