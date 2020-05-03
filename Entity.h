@@ -34,6 +34,8 @@ public:
     float height;
     float depth;
     
+    bool jump;
+    float jumpPower;
 
     GLuint textureID;
     

@@ -23,6 +23,7 @@
     <ProjectGuid>{0F8B7E43-F01F-46E6-A5A6-217A13937247}</ProjectGuid>
     <RootNamespace>SDLProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Infinite Stairs</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

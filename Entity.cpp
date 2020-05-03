@@ -16,6 +16,9 @@ Entity::Entity()
     depth = 1.0f;
     
     speed = 0.0f;
+
+    jump = false;
+    jumpPower = 0;
 }
 
 bool Entity::CheckCollision(Entity* other)
@@ -41,29 +44,25 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
         velocity.x = sin(glm::radians(rotation.y)) * -1.0f;
     }
 
+    if (jump == true) {
+        jump == false;
+        velocity.y += jumpPower;
+    }
+
     velocity += acceleration * deltaTime;
     position += velocity * deltaTime;
     
     if (entityType == PLAYER) {
         for (int i = 0; i < objectCount; i++)
         {
-            // Ignore collisions with the floor
             if (objects[i].entityType == FLOOR) continue;
             if (CheckCollision(&objects[i])) {
                 position = previousPosition;
                 break;
             }
+            if (position.y < 0) { position.y = 0; }
         }
     }
-
-    //if (entityType == CUBE){
-    //    rotation.x += 45 * deltaTime;
-    //    rotation.y += 45 * deltaTime;
-    //    rotation.z += 45 * deltaTime;
-    //}
-    //else if (entityType == ENEMY) {
-    //    rotation.y += 30 * deltaTime;
-    //}
 
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
@@ -87,7 +86,6 @@ void Entity::DrawBillboard(ShaderProgram* program) {
 
 void Entity::Render(ShaderProgram *program) {
     program->SetModelMatrix(modelMatrix);
-    
     
     glBindTexture(GL_TEXTURE_2D, textureID);
 
