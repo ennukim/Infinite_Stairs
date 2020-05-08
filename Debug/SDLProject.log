@@ -1,3 +1,8 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (SDLProject.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  main.cpp
-  SDLProject.vcxproj -> C:\Users\ManyMoons\git_repo\InfiniteStairs\Debug\Infinite Stairs.exe
+main.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall MainMenu::Initialize(void)" (?Initialize@MainMenu@@UAEXXZ)
+main.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall MainMenu::Update(float)" (?Update@MainMenu@@UAEXM@Z)
+main.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall MainMenu::Render(class ShaderProgram *)" (?Render@MainMenu@@UAEXPAVShaderProgram@@@Z)
+main.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall Level::Initialize(void)" (?Initialize@Level@@UAEXXZ)
+main.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall Level::Update(float)" (?Update@Level@@UAEXM@Z)
+main.obj : error LNK2001: unresolved external symbol "public: virtual void __thiscall Level::Render(class ShaderProgram *)" (?Render@Level@@UAEXPAVShaderProgram@@@Z)
+C:\Users\ManyMoons\git_repo\InfiniteStairs\Debug\Infinite Stairs.exe : fatal error LNK1120: 6 unresolved externals

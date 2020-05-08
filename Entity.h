@@ -14,12 +14,15 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
 
-enum EntityType { NONE, PLAYER, PLATFORM, ENEMY, CUBE, FLOOR, BOX };
+enum EntityType { NONE, PLAYER, ENEMY, FLOOR, STAIR };
 
 class Entity {
 public:
     EntityType entityType;
+    EntityType lastCollision;
     
+    int life = 3;
+
     glm::vec3 position;
     glm::vec3 velocity;
     glm::vec3 acceleration;
