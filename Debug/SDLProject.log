@@ -1,3 +1,26 @@
-﻿  Util.cpp
-D:\Spring 2020\Game Programming\Week 13 - UI in 3D\Util.cpp(35,22): warning C4018: '<': signed/unsigned mismatch
-  SDLProject.vcxproj -> D:\Spring 2020\Game Programming\Week 13 - UI in 3D\Debug\SDLProject.exe
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (SDLProject.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Entity.cpp
+D:\Spring 2020\Game Programming\Project 6 - Infinite Stairs\Entity.cpp(48,14): warning C4553: '==': result of expression not used; did you intend '='?
+  main.cpp
+  Mesh.cpp
+D:\Spring 2020\Game Programming\Project 6 - Infinite Stairs\Mesh.cpp(20,48): warning C4244: 'argument': conversion from 'double' to '_Ty', possible loss of data
+          with
+          [
+              _Ty=float
+          ]
+D:\Spring 2020\Game Programming\Project 6 - Infinite Stairs\Mesh.cpp(26,47): warning C4244: 'argument': conversion from 'double' to '_Ty', possible loss of data
+          with
+          [
+              _Ty=float
+          ]
+D:\Spring 2020\Game Programming\Project 6 - Infinite Stairs\Mesh.cpp(34,59): warning C4244: 'argument': conversion from 'double' to '_Ty', possible loss of data
+          with
+          [
+              _Ty=float
+          ]
+  ShaderProgram.cpp
+  Util.cpp
+D:\Spring 2020\Game Programming\Project 6 - Infinite Stairs\Util.cpp(35,22): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  LINK : D:\Spring 2020\Game Programming\Project 6 - Infinite Stairs\Debug\Infinite Stairs.exe not found or not built by the last incremental link; performing full link
+  SDLProject.vcxproj -> D:\Spring 2020\Game Programming\Project 6 - Infinite Stairs\Debug\Infinite Stairs.exe
