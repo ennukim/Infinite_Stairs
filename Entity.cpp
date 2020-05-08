@@ -24,7 +24,7 @@ Entity::Entity()
 bool Entity::CheckCollision(Entity* other)
 {
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
-    float ydist = fabs(position.y - other->position.y) - ((height + other->height) / 2.0f);
+    float ydist = fabs(position.y+1 - other->position.y) - ((height + other->height) / 2.0f);
     float zdist = fabs(position.z - other->position.z) - ((depth + other->depth) / 2.0f);
     if (xdist < 0 && ydist < 0 && zdist < 0) return true;
     return false;
@@ -60,7 +60,7 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
                 position = previousPosition;
                 break;
             }
-            if (position.y < 0) { position.y = 0; }
+            if (position.y < 1) { position.y = 1; }
         }
     }
 

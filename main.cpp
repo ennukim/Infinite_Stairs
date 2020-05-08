@@ -77,7 +77,7 @@ void Initialize() {
     
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(0, 0, 10);
+    state.player->position = glm::vec3(0, 1, 10);
     state.player->acceleration = glm::vec3(0, -9.81f, 0);
     state.player->speed = 1.0f;
     state.player->jumpPower = 0.1f;
@@ -85,15 +85,15 @@ void Initialize() {
     state.objects = new Entity[OBJECT_COUNT];
 
 
-    GLuint floorTextureID = Util::LoadTexture("StoneFloor_Diffuse.jpg");
+    GLuint floorTextureID = Util::LoadTexture("floor.jpg");
     Mesh* floorMesh = new Mesh();
-    floorMesh->LoadOBJ("Realistic_Cube.obj", 20);
+    floorMesh->LoadOBJ("Realistic_Cube.obj", 50);
     state.objects[0].mesh = floorMesh;
     state.objects[0].textureID = floorTextureID;
-    state.objects[0].position = glm::vec3(0, -3.0f, 0);
+    state.objects[0].position = glm::vec3(0, -1.0f, 0);
     state.objects[0].rotation = glm::vec3(0, 0, 0);
     state.objects[0].acceleration = glm::vec3(0, 0, 0);
-    state.objects[0].scale = glm::vec3(100, 0.5f, 100);
+    state.objects[0].scale = glm::vec3(300, 0.5f, 300);
     state.objects[0].entityType = FLOOR;
 
     GLuint stairTextureID = Util::LoadTexture("defStair.jpg");
@@ -108,7 +108,7 @@ void Initialize() {
         state.objects[i].rotation = glm::vec3(0, 0, 0);
         state.objects[i].acceleration = glm::vec3(0, 0, 0);
         state.objects[i].scale = glm::vec3(1, 0.3f, 1);
-        state.objects[i].entityType = BOX;
+        state.objects[i].entityType = STAIR;
     }
 
 
@@ -140,13 +140,17 @@ void Initialize() {
     state.objects[26].position = glm::vec3(1, 10.5f, -10);
     state.objects[27].position = glm::vec3(2, 11.0f, -11);
     state.objects[28].textureID = badTextureID;
+    state.objects[28].entityType = BADSTAIR;
     state.objects[28].position = glm::vec3(3, 12.0f, -12); // introduce brittle blocks
     state.objects[29].textureID = badTextureID;
+    state.objects[28].entityType = BADSTAIR;
     state.objects[29].position = glm::vec3(3, 12.5f, -13); // brittle
     state.objects[30].textureID = badTextureID;
+    state.objects[28].entityType = BADSTAIR;
     state.objects[30].position = glm::vec3(3, 13.0f, -14); // brittle
     state.objects[31].position = glm::vec3(4, 13.5f, -15); // Good Block
     state.objects[32].textureID = badTextureID;
+    state.objects[28].entityType = BADSTAIR;
     state.objects[32].position = glm::vec3(2, 13.5f, -15); // Bad Block
     state.objects[33].position = glm::vec3(5, 14.0f, -16);
     state.objects[34].position = glm::vec3(5, 14.5f, -17);
@@ -175,6 +179,7 @@ void Initialize() {
     state.objects[57].position = glm::vec3(-4, 19.5f, -21);
     state.objects[58].position = glm::vec3(-5, 20.0f, -21); // Two Steps to End the game
     state.objects[59].textureID = endTextureID;
+    state.objects[59].entityType = ENDSTAIR;
     state.objects[59].position = glm::vec3(-6, 20.5f, -22);
 
 }
@@ -191,7 +196,7 @@ void ProcessInput() {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
-                        if (state.player->position.y == 0) {
+                        if (state.player->position.y == 1) {
                             state.player->jump = true;
                             break;
                         }

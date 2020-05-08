@@ -14,7 +14,7 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
 
-enum EntityType { NONE, PLAYER, PLATFORM, ENEMY, CUBE, FLOOR, BOX };
+enum EntityType { NONE, PLAYER, ENEMY, FLOOR, STAIR, BADSTAIR, ENDSTAIR };
 
 class Entity {
 public:
