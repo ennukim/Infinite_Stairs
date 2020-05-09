@@ -1,6 +1,5 @@
 #include "MainMenu.h"
 #include "Util.h"
-#include "Mesh.h"
 
 #define MAINMENU_ENEMYCOUNT 1
 #define MAINMENU_OBJECTCOUNT 5
@@ -22,7 +21,7 @@ void MainMenu::Initialize() {
 	GLuint stairTextureID = Util::LoadTexture("defStair.jpg");
 	Mesh* stairMesh = new Mesh();
 	stairMesh->LoadOBJ("Realistic_Cube.obj", 1);
-	for (int i = 0; i < LEVEL_OBJECT_COUNT; i++) {
+	for (int i = 0; i < MAINMENU_OBJECTCOUNT; i++) {
 		state.objects[i].mesh = stairMesh;
 		state.objects[i].textureID = stairTextureID;
 		state.objects[i].rotation = glm::vec3(0, 0, 0);
@@ -39,10 +38,10 @@ void MainMenu::Initialize() {
 
 }
 void MainMenu::Update(float deltaTime) {
-	state.player->Update(deltaTime, state.player, state.enemies, MAINMENU_ENEMYCOUNT, state.map);
+	state.player->Update(deltaTime, state.player, state.enemies, MAINMENU_ENEMYCOUNT);
 	
 	for (int i = 0; i < MAINMENU_OBJECTCOUNT; i++) {
-		state.objects[i].Update(FIXED_TIMESTEP, state.player, state.objects, MAINMENU_OBJECTCOUNT);
+		state.objects[i].Update(deltaTime, state.player, state.objects, MAINMENU_OBJECTCOUNT);
 	}
 
 }
@@ -50,7 +49,7 @@ void MainMenu::Render(ShaderProgram* program) {
 	state.player->Render(program);
 
 	for (int i = 0; i < MAINMENU_OBJECTCOUNT; i++) {
-		state.objects[i].Render(&program);
+		state.objects[i].Render(program);
 	}
 	//Util::DrawText(&program, currentScene->state.text->textureID, "Infinite Stairs", 0.7f, -0.25f, glm::vec3(0.0f, 3.0f, -1.0f));
 	//Util::DrawText(&program, currentScene->state.text->textureID, "Press Enter to Start", 0.5f, -0.25f, glm::vec3(0.0f, 2.0f, -1.0f));

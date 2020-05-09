@@ -37,6 +37,8 @@ public:
     float height;
     float depth;
     
+
+    bool isActive;
     bool jump;
     float jumpPower;
 

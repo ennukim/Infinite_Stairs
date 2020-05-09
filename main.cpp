@@ -13,7 +13,7 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
-
+#include "Mesh.h"
 #include "Util.h"
 #include "Entity.h"
 #include "Scene.h"
@@ -60,7 +60,7 @@ void Initialize() {
     //Music
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4996);
     music = Mix_LoadMUS("dooblydoo.mp3");
-    Mix_PlayMusic(music, -1);
+    //Mix_PlayMusic(music, -1);
     Mix_VolumeMusic(MIX_MAX_VOLUME / 3);
     bounce = Mix_LoadWAV("bounce.wav");
 
@@ -105,8 +105,8 @@ void ProcessInput() {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
-                        if (state.player->position.y == 1 && currentScene->state.EndOfGame != true) {
-                            state.player->jump = true;
+                        if (currentScene->state.player->position.y == 1 && currentScene->state.EndOfGame != true) {
+                            currentScene->state.player->jump = true;
                             Mix_PlayChannel(-1, bounce, 0); 
                         }
                         break;
@@ -123,29 +123,29 @@ void ProcessInput() {
     const Uint8* keys = SDL_GetKeyboardState(NULL);
     if (currentScene->state.sceneType ==LEVEL && currentScene->state.EndOfGame != true) {
         if (keys[SDL_SCANCODE_A]) {
-            state.player->rotation.y += 1.0f;
+            currentScene->state.player->rotation.y += 1.0f;
         }
         else if (keys[SDL_SCANCODE_D]) {
-            state.player->rotation.y -= 1.0f;
+            currentScene->state.player->rotation.y -= 1.0f;
         }
 
         if (keys[SDL_SCANCODE_W]) {
-            state.player->rotation.x += 1.0f;
+            currentScene->state.player->rotation.x += 1.0f;
         }
         else if (keys[SDL_SCANCODE_S]) {
-            state.player->rotation.x -= 1.0f;
+            currentScene->state.player->rotation.x -= 1.0f;
         }
 
-        state.player->velocity.x = 0;
-        state.player->velocity.z = 0;
+        currentScene->state.player->velocity.x = 0;
+        currentScene->state.player->velocity.z = 0;
 
         if (keys[SDL_SCANCODE_UP]) {
-            state.player->velocity.z = cos(glm::radians(state.player->rotation.y)) * -2.0f;
-            state.player->velocity.x = sin(glm::radians(state.player->rotation.y)) * -2.0f;
+            currentScene->state.player->velocity.z = cos(glm::radians(currentScene->state.player->rotation.y)) * -2.0f;
+            currentScene->state.player->velocity.x = sin(glm::radians(currentScene->state.player->rotation.y)) * -2.0f;
         }
         else if (keys[SDL_SCANCODE_DOWN]) {
-            state.player->velocity.z = cos(glm::radians(state.player->rotation.y)) * 2.0f;
-            state.player->velocity.x = sin(glm::radians(state.player->rotation.y)) * 2.0f;
+            currentScene->state.player->velocity.z = cos(glm::radians(currentScene->state.player->rotation.y)) * 2.0f;
+            currentScene->state.player->velocity.x = sin(glm::radians(currentScene->state.player->rotation.y)) * 2.0f;
         }
     }
 }
@@ -173,9 +173,9 @@ void Update() {
     accumulator = deltaTime;
 
     viewMatrix = glm::mat4(1.0f);
-    viewMatrix = glm::rotate(viewMatrix, glm::radians(state.player->rotation.y), glm::vec3(0, -1.0f, 0));
-    viewMatrix = glm::rotate(viewMatrix, glm::radians(state.player->rotation.x), glm::vec3(-0.5f, 0, 0));
-    viewMatrix = glm::translate(viewMatrix, -state.player->position);
+    viewMatrix = glm::rotate(viewMatrix, glm::radians(currentScene->state.player->rotation.y), glm::vec3(0, -1.0f, 0));
+    viewMatrix = glm::rotate(viewMatrix, glm::radians(currentScene->state.player->rotation.x), glm::vec3(-0.5f, 0, 0));
+    viewMatrix = glm::translate(viewMatrix, -currentScene->state.player->position);
 }
 
 
@@ -185,6 +185,14 @@ void Render() {
     program.SetProjectionMatrix(projectionMatrix);
     program.SetViewMatrix(viewMatrix);
     currentScene->Render(&program);
+    program.SetProjectionMatrix(uiProjectionMatrix);
+    program.SetViewMatrix(uiViewMatrix);
+    Util::DrawText(&program, fontTextureID, "Lives: 3", 0.5, -0.3f, glm::vec3(-6, 3.2, 0));
+    for (int i = 0; i < 3; i++)
+    {
+        // These icons are small, so just move 0.5 to the right for each one.
+        Util::DrawIcon(&program, heartTextureID, glm::vec3(5 + (i * 0.5f), 3.2, 0));
+    }
 
 
     SDL_GL_SwapWindow(displayWindow);

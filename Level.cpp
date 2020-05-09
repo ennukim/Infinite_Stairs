@@ -121,14 +121,14 @@ void Level::Initialize() {
     state.enemies[0].isActive = false;
 }
 void Level::Update(float deltaTime) {
-    state.player->Update(FIXED_TIMESTEP, state.player, state.objects, LEVEL_OBJECT_COUNT);
+    state.player->Update(deltaTime, state.player, state.objects, LEVEL_OBJECT_COUNT);
 
     for (int i = 0; i < LEVEL_OBJECT_COUNT; i++) {
-        state.objects[i].Update(FIXED_TIMESTEP, state.player, state.objects, LEVEL_OBJECT_COUNT);
+        state.objects[i].Update(deltaTime, state.player, state.objects, LEVEL_OBJECT_COUNT);
     }
 
     for (int i = 0; i < LEVEL_ENEMY_COUNT; i++) {
-        state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.objects, LEVEL_OBJECT_COUNT);
+        state.enemies[i].Update(deltaTime, state.player, state.objects, LEVEL_OBJECT_COUNT);
     }
 
 	if (state.player->position.x >= 33) {
@@ -140,20 +140,12 @@ void Level::Update(float deltaTime) {
 }
 void Level::Render(ShaderProgram* program) {
     for (int i = 0; i < LEVEL_OBJECT_COUNT; i++) {
-        state.objects[i].Render(&program);
+        state.objects[i].Render(program);
     }
 
     for (int i = 0; i < LEVEL_ENEMY_COUNT; i++) {
-        state.enemies[i].Render(&program);
-
-
-    program.SetProjectionMatrix(uiProjectionMatrix);
-    program.SetViewMatrix(uiViewMatrix);
-    Util::DrawText(&program, fontTextureID, "Lives: 3", 0.5, -0.3f, glm::vec3(-6, 3.2, 0));
-    for (int i = 0; i < 3; i++)
-    {
-        // These icons are small, so just move 0.5 to the right for each one.
-        Util::DrawIcon(&program, heartTextureID, glm::vec3(5 + (i * 0.5f), 3.2, 0));
+        state.enemies[i].Render(program);
     }
+
 
 }

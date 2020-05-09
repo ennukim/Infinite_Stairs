@@ -11,12 +11,14 @@
 #include "ShaderProgram.h"
 #include "Util.h"
 #include "Entity.h"
+#include "Mesh.h"
 
 enum SceneType { LEVEL, MAINMENU };
 
 struct GameState {
 	Entity* player;
 	Entity* enemies;
+	Entity* objects;
 	Entity* text;
 	int nextScene;
 	SceneType sceneType;
