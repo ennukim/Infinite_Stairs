@@ -39,6 +39,7 @@ public:
 
     GLuint textureID;
     
+    bool isActive = true;
     bool collidedTop = false;
     bool collidedBottom = false;
     bool collidedRight = false;

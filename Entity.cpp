@@ -85,6 +85,13 @@ bool Entity::CheckCollisionsX(Entity* objects, int objectCount)
 
 void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount)
 {
+    if (isActive == false) return;
+
+    collidedTop = false;
+    collidedBottom = false;
+    collidedLeft = false;
+    collidedRight = false;
+    
     glm::vec3 previousPosition = position;
 
     if (billboard) {
@@ -98,15 +105,15 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
     }
 
     if (jump) {
-        jump = false;
         velocity.y += jumpPower;
+        jump = false;
     }
 
     velocity.y += acceleration.y * deltaTime;
     position += velocity * deltaTime;
     
     if (entityType == PLAYER) {
-        if (position.y < 1) { position.y = 1; }
+        if (position.y < -1) { position.y = -1; }
         for (int i = 0; i < objectCount; i++)
         {
             if (objects[i].entityType == FLOOR) continue;
@@ -116,7 +123,6 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
             }
             if (CheckCollisionsY(&objects[i], objectCount)) {
                 position.y = previousPosition.y;
-                //jump = true;
                 break;
             }
         }

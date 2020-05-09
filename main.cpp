@@ -27,6 +27,8 @@ glm::mat4 uiViewMatrix, uiProjectionMatrix;
 GLuint fontTextureID;
 GLuint heartTextureID;
 
+int stepsLeft = 50;
+
 #define OBJECT_COUNT 60
 #define ENEMY_COUNT 10
 
@@ -78,10 +80,10 @@ void Initialize() {
     
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(0, 50.0f, 10);
+    state.player->position = glm::vec3(0, 2.0f, -2);
     state.player->acceleration = glm::vec3(0, -9.81f, 0);
     state.player->speed = 1.0f;
-    state.player->jumpPower = 10.0f;
+    state.player->jumpPower = 5.0f;
     
     
     state.objects = new Entity[OBJECT_COUNT];
@@ -112,8 +114,6 @@ void Initialize() {
         state.objects[i].scale = glm::vec3(1, 0.3f, 1);
         state.objects[i].entityType = STAIR;
     }
-
-
     state.objects[1].position = glm::vec3(0, 0.5f, -2);
     state.objects[2].position = glm::vec3(0, 1.0f, -3);
     state.objects[3].position = glm::vec3(0, 1.5f, -4); // first three steps are stright baby steps
@@ -202,15 +202,10 @@ void ProcessInput() {
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
                         if (gameStart) {
-                            if (state.player->position.y == 1) {
+                            if (state.player->collidedBottom) {
                                 state.player->jump = true;
                             }
-                            else if (state.player->collidedBottom == true) {
-                                state.player->jump = true;
-                            }
-
                             break;
-
                         }
 
                     case SDLK_RETURN:
