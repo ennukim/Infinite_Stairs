@@ -30,15 +30,6 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Level.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.h">
@@ -51,15 +42,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainMenu.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Level.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

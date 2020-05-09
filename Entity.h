@@ -14,15 +14,12 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
 
-enum EntityType { NONE, PLAYER, ENEMY, FLOOR, STAIR };
+enum EntityType { NONE, PLAYER, ENEMY, FLOOR, STAIR, BADSTAIR, ENDSTAIR };
 
 class Entity {
 public:
     EntityType entityType;
-    EntityType lastCollision;
     
-    int life = 3;
-
     glm::vec3 position;
     glm::vec3 velocity;
     glm::vec3 acceleration;
@@ -37,18 +34,27 @@ public:
     float height;
     float depth;
     
-
-    bool isActive;
-    bool jump;
-    float jumpPower;
+    bool jump = false;
+    float jumpPower = 0;
 
     GLuint textureID;
     
+    bool isActive = true;
+    bool collidedTop = false;
+    bool collidedBottom = false;
+    bool collidedRight = false;
+    bool collidedLeft = false;
+    bool collidedFront = false;
+    bool collidedBack = false;
+    EntityType lastCollision;
+
     glm::mat4 modelMatrix;
     
     Entity();
     
     bool CheckCollision(Entity* other);
+    bool CheckCollisionsX(Entity* objects, int objectCount);
+    bool CheckCollisionsY(Entity* objects, int objectCount);
     void Update(float deltaTime, Entity* player, Entity* objects, int objectCount);
     void DrawBillboard(ShaderProgram* program);
     void Render(ShaderProgram *program);

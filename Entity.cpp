@@ -19,7 +19,6 @@ Entity::Entity()
 
     jump = false;
     jumpPower = 0;
-    isActive = true;
 }
 
 bool Entity::CheckCollision(Entity* other)
@@ -31,48 +30,110 @@ bool Entity::CheckCollision(Entity* other)
     return false;
 }
 
-void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount)
+bool Entity::CheckCollisionsY(Entity* objects, int objectCount)
 {
-    if (isActive) {
-        glm::vec3 previousPosition = position;
-
-        if (billboard) {
-            float directionX = position.x - player->position.x;
-            float directionZ = position.z - player->position.z;
-            rotation.y = glm::degrees(atan2f(directionX, directionZ));
-
-            //always move to the player
-            velocity.z = cos(glm::radians(rotation.y)) * -1.0f;
-            velocity.x = sin(glm::radians(rotation.y)) * -1.0f;
-        }
-
-        if (jump == true) {
-            jump == false;
-            velocity.y += jumpPower;
-        }
-
-        velocity += acceleration * deltaTime;
-        position += velocity * deltaTime;
-
-        if (entityType == PLAYER) {
-            for (int i = 0; i < objectCount; i++)
-            {
-                if (objects[i].entityType == FLOOR) continue;
-                if (CheckCollision(&objects[i])) {
-                    position = previousPosition;
-                    break;
-                }
-                if (position.y < 1) { position.y = 1; }
+    for (int i = 0; i < objectCount; i++)
+    {
+        Entity* object = &objects[i];
+        if (CheckCollision(object))
+        {
+            float ydist = fabs(position.y - object->position.y);
+            float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
+            if (velocity.y > 0) {
+                position.y -= penetrationY;
+                velocity.y = 0;
+                collidedTop = true;
+                return true;
+            }
+            else if (velocity.y < 0) {
+                position.y += penetrationY;
+                velocity.y = 0;
+                collidedBottom = true;
+                return true;
             }
         }
 
-        modelMatrix = glm::mat4(1.0f);
-        modelMatrix = glm::translate(modelMatrix, position);
-        modelMatrix = glm::scale(modelMatrix, scale);
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
     }
+    return false;
+}
+
+bool Entity::CheckCollisionsX(Entity* objects, int objectCount)
+{
+    for (int i = 0; i < objectCount; i++)
+    {
+        Entity* object = &objects[i];
+        if (CheckCollision(object))
+        {
+            float xdist = fabs(position.x - object->position.x);
+            float penetrationX = fabs(xdist - (width / 2.0f) - (object->width / 2.0f));
+            if (velocity.x > 0) {
+                position.x -= penetrationX;
+                velocity.x = 0;
+                collidedRight = true;
+                return true;
+            }
+            else if (velocity.x < 0) {
+                position.x += penetrationX;
+                velocity.x = 0;
+                collidedLeft = true;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount)
+{
+    if (isActive == false) return;
+
+    collidedTop = false;
+    collidedBottom = false;
+    collidedLeft = false;
+    collidedRight = false;
+    
+    glm::vec3 previousPosition = position;
+
+    if (billboard) {
+        float directionX = position.x - player->position.x;
+        float directionZ = position.z - player->position.z;
+        rotation.y = glm::degrees(atan2f(directionX, directionZ));
+        
+        //always move to the player
+        velocity.z = cos(glm::radians(rotation.y)) * -1.0f;
+        velocity.x = sin(glm::radians(rotation.y)) * -1.0f;
+    }
+
+    if (jump) {
+        velocity.y += jumpPower;
+        jump = false;
+    }
+
+    velocity.y += acceleration.y * deltaTime;
+    position += velocity * deltaTime;
+    
+    if (entityType == PLAYER) {
+        if (position.y < -1) { position.y = -1; }
+        for (int i = 0; i < objectCount; i++)
+        {
+            if (objects[i].entityType == FLOOR) continue;
+            if (CheckCollisionsX(&objects[i], objectCount)) {
+                position.x = previousPosition.x;
+                break;
+            }
+            if (CheckCollisionsY(&objects[i], objectCount)) {
+                position.y = previousPosition.y;
+                break;
+            }
+        }
+    }
+
+    modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
+    modelMatrix = glm::scale(modelMatrix, scale);
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void Entity::DrawBillboard(ShaderProgram* program) {
