@@ -77,17 +77,18 @@ void Initialize() {
     
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(0, 1, 10);
+    state.player->position = glm::vec3(0, 2.0, 10);
     state.player->acceleration = glm::vec3(0, -9.81f, 0);
     state.player->speed = 1.0f;
-    state.player->jumpPower = 0.1f;
+    state.player->jumpPower = 1.0f;
+    
     
     state.objects = new Entity[OBJECT_COUNT];
-
 
     GLuint floorTextureID = Util::LoadTexture("floor.jpg");
     Mesh* floorMesh = new Mesh();
     floorMesh->LoadOBJ("Realistic_Cube.obj", 50);
+
     state.objects[0].mesh = floorMesh;
     state.objects[0].textureID = floorTextureID;
     state.objects[0].position = glm::vec3(0, -1.0f, 0);
@@ -196,7 +197,7 @@ void ProcessInput() {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
-                        if (state.player->position.y == 1) {
+                        if (state.player->position.y == 2) {
                             state.player->jump = true;
                             break;
                         }

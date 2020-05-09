@@ -24,7 +24,7 @@ Entity::Entity()
 bool Entity::CheckCollision(Entity* other)
 {
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
-    float ydist = fabs(position.y+1 - other->position.y) - ((height + other->height) / 2.0f);
+    float ydist = fabs(position.y - other->position.y) - ((height + other->height) / 2.0f);
     float zdist = fabs(position.z - other->position.z) - ((depth + other->depth) / 2.0f);
     if (xdist < 0 && ydist < 0 && zdist < 0) return true;
     return false;
@@ -44,15 +44,16 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
         velocity.x = sin(glm::radians(rotation.y)) * -1.0f;
     }
 
-    if (jump == true) {
-        jump == false;
+    if (jump) {
         velocity.y += jumpPower;
+        jump == false;
     }
 
-    velocity += acceleration * deltaTime;
+    velocity.y += acceleration.y * deltaTime;
     position += velocity * deltaTime;
     
     if (entityType == PLAYER) {
+        if (position.y < 1) { position.y = 1; }
         for (int i = 0; i < objectCount; i++)
         {
             if (objects[i].entityType == FLOOR) continue;
@@ -60,7 +61,6 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
                 position = previousPosition;
                 break;
             }
-            if (position.y < 1) { position.y = 1; }
         }
     }
 
