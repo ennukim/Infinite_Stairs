@@ -7,6 +7,7 @@
 #define GL_GLEXT_PROTOTYPES 1
 
 #include <vector>
+#include <string>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include "glm/mat4x4.hpp"
@@ -20,6 +21,10 @@
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
 bool gameStart = false;
+bool gameEnd = false;
+
+enum GameResult {WIN, LOSE, PLAYING};
+GameResult gameResult = PLAYING;
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
@@ -27,9 +32,10 @@ glm::mat4 uiViewMatrix, uiProjectionMatrix;
 GLuint fontTextureID;
 GLuint heartTextureID;
 
-int stepsLeft = 50;
 
-#define OBJECT_COUNT 60
+int remainingLives = 0;
+
+#define OBJECT_COUNT 10
 #define ENEMY_COUNT 10
 
 struct GameState {
@@ -80,113 +86,31 @@ void Initialize() {
     
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(0, 2.0f, -2);
+    state.player->position = glm::vec3(0, 2.0f, -1);
+    state.player->rotation = glm::vec3(0.0f, 0, 0);
     state.player->acceleration = glm::vec3(0, -9.81f, 0);
-    state.player->speed = 1.0f;
+    state.player->speed = 0.5f;
     state.player->jumpPower = 5.0f;
     
     
     state.objects = new Entity[OBJECT_COUNT];
 
-    GLuint floorTextureID = Util::LoadTexture("floor.jpg");
-    Mesh* floorMesh = new Mesh();
-    floorMesh->LoadOBJ("Realistic_Cube.obj", 50);
-
-    state.objects[0].mesh = floorMesh;
-    state.objects[0].textureID = floorTextureID;
-    state.objects[0].position = glm::vec3(0, -1.0f, 0);
-    state.objects[0].rotation = glm::vec3(0, 0, 0);
-    state.objects[0].acceleration = glm::vec3(0, 0, 0);
-    state.objects[0].scale = glm::vec3(300, 0.5f, 300);
-    state.objects[0].entityType = FLOOR;
-
     GLuint stairTextureID = Util::LoadTexture("defStair.jpg");
-    GLuint badTextureID = Util::LoadTexture("badStair.jpg");
     GLuint endTextureID = Util::LoadTexture("endStair.jpg");
     Mesh* stairMesh = new Mesh();
     stairMesh->LoadOBJ("Realistic_Cube.obj", 1);
 
-    for (int i = 1; i < OBJECT_COUNT; i++) {
+    for (int i = 0; i < OBJECT_COUNT; i++) {
         state.objects[i].mesh = stairMesh;
         state.objects[i].textureID = stairTextureID;
         state.objects[i].rotation = glm::vec3(0, 0, 0);
         state.objects[i].acceleration = glm::vec3(0, 0, 0);
         state.objects[i].scale = glm::vec3(1, 0.3f, 1);
         state.objects[i].entityType = STAIR;
+        state.objects[i].position = glm::vec3(0, 0.5*i, -1-i);
     }
-    state.objects[1].position = glm::vec3(0, 0.5f, -2);
-    state.objects[2].position = glm::vec3(0, 1.0f, -3);
-    state.objects[3].position = glm::vec3(0, 1.5f, -4); // first three steps are stright baby steps
-    state.objects[4].position = glm::vec3(1, 2.0f, -5); // Implement a right step
-    state.objects[5].position = glm::vec3(0, 2.5f, -6); // Implement a left step
-    state.objects[6].position = glm::vec3(0, 2.0f, -7); // Implement a down step
-    state.objects[7].position = glm::vec3(0, 2.5f, -8);
-    state.objects[8].position = glm::vec3(-1, 3.0f, -9);
-    state.objects[9].position = glm::vec3(-2, 3.5f, -10); // Implement a backturn step
-    state.objects[10].position = glm::vec3(-3, 4.0f, -9);
-    state.objects[11].position = glm::vec3(-4, 4.5f, -8);
-    state.objects[12].position = glm::vec3(-4, 5.0f, -7);
-    state.objects[13].position = glm::vec3(-4, 5.5f, -6);
-    state.objects[14].position = glm::vec3(-4, 5.5f, -4); // Implement a jump step 
-    state.objects[15].position = glm::vec3(-4, 6.0f, -3);
-    state.objects[16].position = glm::vec3(-3, 6.5f, -2);
-    state.objects[17].position = glm::vec3(-2, 7.0f, -1); // Turn directions again
-    state.objects[18].position = glm::vec3(-1, 7.5f, -2);
-    state.objects[19].position = glm::vec3(-1, 8.0f, -3); // 20 stairs - basics
-    state.objects[20].position = glm::vec3(-1, 8.5f, -4);
-    state.objects[21].position = glm::vec3(-2, 9.0f, -5); // We give a choice - a bad stair appear for the first time.
-    state.objects[22].position = glm::vec3(0, 9.0f, -5);
-    state.objects[23].position = glm::vec3(-1, 9.5f, -6);
-    state.objects[24].position = glm::vec3(0, 10.0f, -7);
-    state.objects[25].position = glm::vec3(0, 10.0f, -9); // Another Jump - Introduce moving AI here
-    state.objects[26].position = glm::vec3(1, 10.5f, -10);
-    state.objects[27].position = glm::vec3(2, 11.0f, -11);
-    state.objects[28].textureID = badTextureID;
-    state.objects[28].entityType = BADSTAIR;
-    state.objects[28].position = glm::vec3(3, 12.0f, -12); // introduce brittle blocks
-    state.objects[29].textureID = badTextureID;
-    state.objects[28].entityType = BADSTAIR;
-    state.objects[29].position = glm::vec3(3, 12.5f, -13); // brittle
-    state.objects[30].textureID = badTextureID;
-    state.objects[28].entityType = BADSTAIR;
-    state.objects[30].position = glm::vec3(3, 13.0f, -14); // brittle
-    state.objects[31].position = glm::vec3(4, 13.5f, -15); // Good Block
-    state.objects[32].textureID = badTextureID;
-    state.objects[28].entityType = BADSTAIR;
-    state.objects[32].position = glm::vec3(2, 13.5f, -15); // Bad Block
-    state.objects[33].position = glm::vec3(5, 14.0f, -16);
-    state.objects[34].position = glm::vec3(5, 14.5f, -17);
-    state.objects[35].position = glm::vec3(5, 13.5f, -19); // Down Long Jump //May 7th 2020
-    state.objects[36].position = glm::vec3(5, 14.0f, -20);
-    state.objects[37].position = glm::vec3(6, 14.5f, -21);
-    state.objects[38].position = glm::vec3(7, 15.0f, -22);
-    state.objects[39].position = glm::vec3(8, 15.5f, -23);
-    state.objects[40].position = glm::vec3(7, 16.0f, -24);
-    state.objects[41].position = glm::vec3(6, 16.5f, -23); // backward turn again
-    state.objects[42].position = glm::vec3(5, 17.0f, -22);
-    state.objects[43].position = glm::vec3(4, 17.5f, -21);
-    state.objects[44].position = glm::vec3(3, 18.0f, -20);
-    state.objects[45].position = glm::vec3(1, 18.0f, -19); // X - dividing tiles - Obstacle Avoid Section
-    state.objects[46].position = glm::vec3(1, 18.0f, -21);
-    state.objects[47].position = glm::vec3(-1, 18.0f, -22); // 3 divided jump tiles - Obstacle
-    state.objects[48].position = glm::vec3(-1, 18.0f, -20);
-    state.objects[49].position = glm::vec3(-1, 18.0f, -18);
-    state.objects[50].position = glm::vec3(-2, 18.5f, -19); // two tiles rising up
-    state.objects[51].position = glm::vec3(-2, 18.5f, -21);
-    state.objects[52].position = glm::vec3(-3, 19.0f, -19); // Three stairs - before next obstacle
-    state.objects[53].position = glm::vec3(-3, 19.0f, -20);
-    state.objects[54].position = glm::vec3(-3, 19.0f, -21);
-    state.objects[55].position = glm::vec3(-4, 19.5f, -19); // Rising obstacles - 3 tiles that interchange in being an obstacle
-    state.objects[56].position = glm::vec3(-4, 19.5f, -20);
-    state.objects[57].position = glm::vec3(-4, 19.5f, -21);
-    state.objects[58].position = glm::vec3(-5, 20.0f, -21); // Two Steps to End the game
-    state.objects[59].textureID = endTextureID;
-    state.objects[59].entityType = ENDSTAIR;
-    state.objects[59].position = glm::vec3(-6, 20.5f, -22);
-
-    Util::DrawText(&program, fontTextureID, "Infinite Stairs", 0.5, -0.3f, glm::vec3(0, 2.0f, -1.0f));
-
-
+    state.objects[0].scale = glm::vec3(3, 0.3f, 3);
+    state.objects[OBJECT_COUNT-1].textureID = endTextureID;
 }
 
 void ProcessInput() {
@@ -201,7 +125,7 @@ void ProcessInput() {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
-                        if (gameStart) {
+                        if (gameStart && !gameEnd) {
                             if (state.player->collidedBottom) {
                                 state.player->jump = true;
                             }
@@ -219,31 +143,30 @@ void ProcessInput() {
         }
     }
     const Uint8* keys = SDL_GetKeyboardState(NULL);
-    if (keys[SDL_SCANCODE_A]) {
-        state.player->rotation.y += 1.0f;
-    }
-    else if (keys[SDL_SCANCODE_D]) {
-        state.player->rotation.y -= 1.0f;
+    if (gameStart && !gameEnd) {
+        if (keys[SDL_SCANCODE_LEFT]) {
+            state.player->rotation.y += 1.0f;
+        }
+        else if (keys[SDL_SCANCODE_RIGHT]) {
+            state.player->rotation.y -= 1.0f;
+        }
+
+        state.player->velocity.x = 0;
+        state.player->velocity.z = 0;
+
+        if (keys[SDL_SCANCODE_UP]) {
+            state.player->velocity.z = cos(glm::radians(state.player->rotation.y)) * -2.0f;
+            state.player->velocity.x = sin(glm::radians(state.player->rotation.y)) * -2.0f;
+        }
+        else if (keys[SDL_SCANCODE_DOWN]) {
+            state.player->velocity.z = cos(glm::radians(state.player->rotation.y)) * 2.0f;
+            state.player->velocity.x = sin(glm::radians(state.player->rotation.y)) * 2.0f;
+        }
     }
 
-    if (keys[SDL_SCANCODE_W]) {
-        state.player->rotation.x += 1.0f;
-    }
-    else if (keys[SDL_SCANCODE_S]) {
-        state.player->rotation.x -= 1.0f;
-    }
 
-    state.player->velocity.x = 0;
-    state.player->velocity.z = 0;
 
-    if (keys[SDL_SCANCODE_UP]) {
-        state.player->velocity.z = cos(glm::radians(state.player->rotation.y)) * -2.0f;
-        state.player->velocity.x = sin(glm::radians(state.player->rotation.y)) * -2.0f;
-    }
-    else if (keys[SDL_SCANCODE_DOWN]) {
-        state.player->velocity.z = cos(glm::radians(state.player->rotation.y)) * 2.0f;
-        state.player->velocity.x = sin(glm::radians(state.player->rotation.y)) * 2.0f;
-    }
+    
 }
 
 #define FIXED_TIMESTEP 0.0166666f
@@ -261,7 +184,7 @@ void Update() {
         return;
     }
     
-    while ((deltaTime >= FIXED_TIMESTEP) && gameStart) {
+    while ((deltaTime >= FIXED_TIMESTEP) && !gameEnd) {
         state.player->Update(FIXED_TIMESTEP, state.player, state.objects, OBJECT_COUNT);
 
         for (int i = 0; i < OBJECT_COUNT; i++) {
@@ -275,6 +198,15 @@ void Update() {
         deltaTime -= FIXED_TIMESTEP;
     }
     
+    if (state.player->stairIndex == OBJECT_COUNT) {
+        gameEnd = true;
+        gameResult = WIN;
+    }
+    else if (remainingLives == 0) {
+        gameEnd = true;
+        gameResult = LOSE;
+    }
+
     accumulator = deltaTime;
 
     viewMatrix = glm::mat4(1.0f);
@@ -299,6 +231,7 @@ void Render() {
             state.enemies[i].Render(&program);
         }*/
     }
+
     program.SetProjectionMatrix(uiProjectionMatrix);
     program.SetViewMatrix(uiViewMatrix);
 
@@ -306,13 +239,20 @@ void Render() {
         Util::DrawText(&program, fontTextureID, "Infinite Stairs", 1.5f, -1.0f, glm::vec3(-3.7f, 2.0f, -1.0f));
         Util::DrawText(&program, fontTextureID, "Press Enter to Start", 0.5, -0.3f, glm::vec3(-2.0f, 0, -1.0f));
     }
-    else {
-        Util::DrawText(&program, fontTextureID, "Lives: 2", 0.5, -0.3f, glm::vec3(-6, 3.2, 0));
-        for (int i = 0; i < 3; i++)
+    else if (!gameEnd){
+        Util::DrawText(&program, fontTextureID, "Lives: " + std::to_string(remainingLives), 0.5, -0.3f, glm::vec3(-6, 3.2, 0));
+        Util::DrawText(&program, fontTextureID, "Stairs Left: " + (std::to_string(OBJECT_COUNT - state.player->stairIndex)), 0.5, -0.25f, glm::vec3(-3, 3.2, 0));
+        for (int i = 0; i < remainingLives; i++)
         {
             // These icons are small, so just move 0.5 to the right for each one.
             Util::DrawIcon(&program, heartTextureID, glm::vec3(5 + (i * 0.5f), 3.2, 0));
         }
+    }
+    else if (gameEnd && (gameResult == WIN)){
+        Util::DrawText(&program, fontTextureID, "YOU WIN", 0.5, -0.2f, glm::vec3(-2.0f, 0, -1.0f));
+    }
+    else if (gameEnd && (gameResult == LOSE)) {
+        Util::DrawText(&program, fontTextureID, "GAME OVER", 0.5, -0.2f, glm::vec3(-2.0f, 0, -1.0f));
     }
     SDL_GL_SwapWindow(displayWindow);
 }

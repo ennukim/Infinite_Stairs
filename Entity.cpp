@@ -49,6 +49,7 @@ bool Entity::CheckCollisionsY(Entity* objects, int objectCount)
                 position.y += penetrationY;
                 velocity.y = 0;
                 collidedBottom = true;
+                stairIndex = i+1;
                 return true;
             }
         }
@@ -110,13 +111,12 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
     }
 
     velocity.y += acceleration.y * deltaTime;
-    position += velocity * deltaTime;
+    position += velocity * speed * deltaTime;
     
     if (entityType == PLAYER) {
-        if (position.y < -1) { position.y = -1; }
+        if (position.y < 0) { position.y = 0; }
         for (int i = 0; i < objectCount; i++)
         {
-            if (objects[i].entityType == FLOOR) continue;
             if (CheckCollisionsX(&objects[i], objectCount)) {
                 position.x = previousPosition.x;
                 break;

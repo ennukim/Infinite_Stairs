@@ -46,6 +46,8 @@ public:
     bool collidedLeft = false;
     bool collidedFront = false;
     bool collidedBack = false;
+
+    int stairIndex = 0;
     EntityType lastCollision;
 
     glm::mat4 modelMatrix;
