@@ -33,7 +33,7 @@ GLuint fontTextureID;
 GLuint heartTextureID;
 
 
-int remainingLives = 0;
+int remainingLives = 3;
 
 #define OBJECT_COUNT 10
 #define ENEMY_COUNT 10

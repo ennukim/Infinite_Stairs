@@ -21,6 +21,38 @@ Entity::Entity()
     jumpPower = 0;
 }
 
+void Entity::AIEnemy(Entity* player) {
+    switch (aiState) {
+    case PATROL:
+        if (player->position.x > position.x) {
+            velocity.x = 1.0f;
+        }
+        else { velocity.x = -1.0f; }
+        break;
+
+    case CHASE:
+        if (player->position.x > position.x) {
+            velocity.x = 1.0f;
+        }
+        else { velocity.x = -1.0f; }
+
+        if (player->position.y > position.y) {
+            acceleration.y = 1.0f;
+        }
+        else { acceleration.y = -1.0f; }
+        break;
+    }
+}
+
+
+void Entity::AI(Entity* player) {
+    switch (aiType) {
+    case ENEMYAI:
+        AIEnemy(player);
+    }
+
+}
+
 bool Entity::CheckCollision(Entity* other)
 {
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
