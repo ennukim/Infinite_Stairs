@@ -34,16 +34,26 @@ public:
     float height;
     float depth;
     
-    bool jump;
-    float jumpPower;
+    bool jump = false;
+    float jumpPower = 0;
 
     GLuint textureID;
     
+    bool collidedTop = false;
+    bool collidedBottom = false;
+    bool collidedRight = false;
+    bool collidedLeft = false;
+    bool collidedFront = false;
+    bool collidedBack = false;
+    EntityType lastCollision;
+
     glm::mat4 modelMatrix;
     
     Entity();
     
     bool CheckCollision(Entity* other);
+    bool CheckCollisionsX(Entity* objects, int objectCount);
+    bool CheckCollisionsY(Entity* objects, int objectCount);
     void Update(float deltaTime, Entity* player, Entity* objects, int objectCount);
     void DrawBillboard(ShaderProgram* program);
     void Render(ShaderProgram *program);

@@ -19,6 +19,7 @@
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
+bool gameStart = false;
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
@@ -77,10 +78,10 @@ void Initialize() {
     
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(0, 2.0, 10);
+    state.player->position = glm::vec3(0, 50.0f, 10);
     state.player->acceleration = glm::vec3(0, -9.81f, 0);
     state.player->speed = 1.0f;
-    state.player->jumpPower = 1.0f;
+    state.player->jumpPower = 10.0f;
     
     
     state.objects = new Entity[OBJECT_COUNT];
@@ -183,6 +184,9 @@ void Initialize() {
     state.objects[59].entityType = ENDSTAIR;
     state.objects[59].position = glm::vec3(-6, 20.5f, -22);
 
+    Util::DrawText(&program, fontTextureID, "Infinite Stairs", 0.5, -0.3f, glm::vec3(0, 2.0f, -1.0f));
+
+
 }
 
 void ProcessInput() {
@@ -197,12 +201,26 @@ void ProcessInput() {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
-                        if (state.player->position.y == 2) {
-                            state.player->jump = true;
+                        if (gameStart) {
+                            if (state.player->position.y == 1) {
+                                state.player->jump = true;
+                            }
+                            else if (state.player->collidedBottom == true) {
+                                state.player->jump = true;
+                            }
+
                             break;
+
                         }
+
+                    case SDLK_RETURN:
+                        if (!gameStart) {
+                            gameStart = true;
+                        }
+
                 }
                 break;
+            
         }
     }
     const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -248,7 +266,7 @@ void Update() {
         return;
     }
     
-    while (deltaTime >= FIXED_TIMESTEP) {
+    while ((deltaTime >= FIXED_TIMESTEP) && gameStart) {
         state.player->Update(FIXED_TIMESTEP, state.player, state.objects, OBJECT_COUNT);
 
         for (int i = 0; i < OBJECT_COUNT; i++) {
@@ -277,23 +295,30 @@ void Render() {
     program.SetProjectionMatrix(projectionMatrix);
     program.SetViewMatrix(viewMatrix);
     
-    for (int i = 0; i < OBJECT_COUNT; i++) {
-        state.objects[i].Render(&program);
-    }
+    if (gameStart) {
+        for (int i = 0; i < OBJECT_COUNT; i++) {
+            state.objects[i].Render(&program);
+        }
 
-    /*for (int i = 0; i < ENEMY_COUNT; i++) {
-        state.enemies[i].Render(&program);
-    }*/
-    
+        /*for (int i = 0; i < ENEMY_COUNT; i++) {
+            state.enemies[i].Render(&program);
+        }*/
+    }
     program.SetProjectionMatrix(uiProjectionMatrix);
     program.SetViewMatrix(uiViewMatrix);
-    Util::DrawText(&program, fontTextureID, "Lives: 3", 0.5, -0.3f, glm::vec3(-6, 3.2, 0));
-    for (int i = 0; i < 3; i++)
-    {
-        // These icons are small, so just move 0.5 to the right for each one.
-        Util::DrawIcon(&program, heartTextureID, glm::vec3(5 + (i * 0.5f), 3.2, 0));
-    }
 
+    if (!gameStart) {
+        Util::DrawText(&program, fontTextureID, "Infinite Stairs", 1.5f, -1.0f, glm::vec3(-3.7f, 2.0f, -1.0f));
+        Util::DrawText(&program, fontTextureID, "Press Enter to Start", 0.5, -0.3f, glm::vec3(-2.0f, 0, -1.0f));
+    }
+    else {
+        Util::DrawText(&program, fontTextureID, "Lives: 2", 0.5, -0.3f, glm::vec3(-6, 3.2, 0));
+        for (int i = 0; i < 3; i++)
+        {
+            // These icons are small, so just move 0.5 to the right for each one.
+            Util::DrawIcon(&program, heartTextureID, glm::vec3(5 + (i * 0.5f), 3.2, 0));
+        }
+    }
     SDL_GL_SwapWindow(displayWindow);
 }
 
