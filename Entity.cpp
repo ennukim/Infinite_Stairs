@@ -9,6 +9,7 @@ Entity::Entity()
     rotation = glm::vec3(0);
     scale = glm::vec3(1);
 
+    int remainingLives = 3;
     billboard = false;
 
     width = 1.0f;
@@ -21,6 +22,7 @@ Entity::Entity()
     jumpPower = 0;
 }
 
+
 bool Entity::CheckCollision(Entity* other)
 {
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
@@ -30,8 +32,69 @@ bool Entity::CheckCollision(Entity* other)
     return false;
 }
 
-void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount)
+bool Entity::CheckCollisionsY(Entity* objects, int objectCount)
 {
+    for (int i = 0; i < objectCount; i++)
+    {
+        Entity* object = &objects[i];
+        if (CheckCollision(object))
+        {
+            float ydist = fabs(position.y - object->position.y);
+            float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
+            if (velocity.y > 0) {
+                position.y -= penetrationY;
+                velocity.y = 0;
+                collidedTop = true;
+                return true;
+            }
+            else if (velocity.y < 0) {
+                position.y += penetrationY;
+                velocity.y = 0;
+                collidedBottom = true;
+                stairIndex = i+1;
+                return true;
+            }
+        }
+
+    }
+    return false;
+}
+
+bool Entity::CheckCollisionsX(Entity* objects, int objectCount)
+{
+    for (int i = 0; i < objectCount; i++)
+    {
+        Entity* object = &objects[i];
+        if (CheckCollision(object))
+        {
+            float xdist = fabs(position.x - object->position.x);
+            float penetrationX = fabs(xdist - (width / 2.0f) - (object->width / 2.0f));
+            if (velocity.x > 0) {
+                position.x -= penetrationX;
+                velocity.x = 0;
+                collidedRight = true;
+                return true;
+            }
+            else if (velocity.x < 0) {
+                position.x += penetrationX;
+                velocity.x = 0;
+                collidedLeft = true;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Entity* enemies, int enemyCount)
+{
+    if (isActive == false) return;
+
+    collidedTop = false;
+    collidedBottom = false;
+    collidedLeft = false;
+    collidedRight = false;
+    
     glm::vec3 previousPosition = position;
 
     if (billboard) {
@@ -39,11 +102,20 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
         float directionZ = position.z - player->position.z;
         rotation.y = glm::degrees(atan2f(directionX, directionZ));
         
-        //always move to the player
-        velocity.z = cos(glm::radians(rotation.y)) * -1.0f;
-        velocity.x = sin(glm::radians(rotation.y)) * -1.0f;
+        if (position.x >= 5.0f) {
+            velocity.x = -0.5f;
+        }
+        if (position.x <= -5.0f) {
+            velocity.x = 0.5f;
+        }
     }
 
+    if (jump) {
+        velocity.y += jumpPower;
+        jump = false;
+    }
+
+<<<<<<< HEAD
     if (jump == true) {
         jump == false;
         velocity.y += jumpPower;
@@ -51,13 +123,39 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
 
     velocity += acceleration * deltaTime;
     position += velocity * deltaTime;
+=======
+    velocity.y += acceleration.y * deltaTime;
+    position += velocity * speed * deltaTime;
+>>>>>>> Soo-V2
     
     if (entityType == PLAYER) {
+        if (position.y < 0) { 
+            position = glm::vec3(0, 3.0f, -0.9f);
+            rotation = glm::vec3(0.0f, 0, 0);
+            remainingLives -= 1;
+        }
         for (int i = 0; i < objectCount; i++)
         {
+<<<<<<< HEAD
             if (objects[i].entityType == FLOOR) continue;
             if (CheckCollision(&objects[i])) {
                 position = previousPosition;
+=======
+            if (CheckCollisionsX(&objects[i], objectCount)) {
+                position.x = previousPosition.x;
+                break;
+            }
+            if (CheckCollisionsY(&objects[i], objectCount)) {
+                position.y = previousPosition.y;
+                break;
+            }
+        }
+        for (int i = 0; i < enemyCount; i++)
+        {
+            if (CheckCollision(&enemies[i])) {
+                remainingLives -= 1;
+                position.z += 1.0f;
+>>>>>>> Soo-V2
                 break;
             }
             if (position.y < 1) { position.y = 1; }

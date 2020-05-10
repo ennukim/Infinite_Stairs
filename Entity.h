@@ -14,11 +14,18 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
 
+<<<<<<< HEAD
 enum EntityType { NONE, PLAYER, ENEMY, FLOOR, STAIR, BADSTAIR, ENDSTAIR };
+=======
+enum EntityType { NONE, PLAYER, ENEMY, STAIR, ENDSTAIR };
+
+>>>>>>> Soo-V2
 
 class Entity {
 public:
     EntityType entityType;
+    EntityType lastCollision;
+
     
     glm::vec3 position;
     glm::vec3 velocity;
@@ -33,18 +40,36 @@ public:
     float width;
     float height;
     float depth;
+    int remainingLives;
     
+<<<<<<< HEAD
     bool jump;
     float jumpPower;
+=======
+    bool jump = false;
+    float jumpPower = 0;
+>>>>>>> Soo-V2
 
     GLuint textureID;
     
+    bool isActive = true;
+    bool collidedTop = false;
+    bool collidedBottom = false;
+    bool collidedRight = false;
+    bool collidedLeft = false;
+    bool collidedFront = false;
+    bool collidedBack = false;
+
+    int stairIndex = 0;
+
     glm::mat4 modelMatrix;
     
     Entity();
-    
+
     bool CheckCollision(Entity* other);
-    void Update(float deltaTime, Entity* player, Entity* objects, int objectCount);
+    bool CheckCollisionsX(Entity* objects, int objectCount);
+    bool CheckCollisionsY(Entity* objects, int objectCount);
+    void Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Entity* enemies, int enemyCount);
     void DrawBillboard(ShaderProgram* program);
     void Render(ShaderProgram *program);
 };
