@@ -14,12 +14,8 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
 
-<<<<<<< HEAD
-enum EntityType { NONE, PLAYER, ENEMY, FLOOR, STAIR, BADSTAIR, ENDSTAIR };
-=======
 enum EntityType { NONE, PLAYER, ENEMY, STAIR, ENDSTAIR };
 
->>>>>>> Soo-V2
 
 class Entity {
 public:
@@ -42,13 +38,8 @@ public:
     float depth;
     int remainingLives;
     
-<<<<<<< HEAD
-    bool jump;
-    float jumpPower;
-=======
     bool jump = false;
     float jumpPower = 0;
->>>>>>> Soo-V2
 
     GLuint textureID;
     

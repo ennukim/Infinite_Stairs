@@ -26,7 +26,7 @@ Entity::Entity()
 bool Entity::CheckCollision(Entity* other)
 {
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
-    float ydist = fabs(position.y+1 - other->position.y) - ((height + other->height) / 2.0f);
+    float ydist = fabs(position.y - other->position.y) - ((height + other->height) / 2.0f);
     float zdist = fabs(position.z - other->position.z) - ((depth + other->depth) / 2.0f);
     if (xdist < 0 && ydist < 0 && zdist < 0) return true;
     return false;
@@ -115,18 +115,8 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
         jump = false;
     }
 
-<<<<<<< HEAD
-    if (jump == true) {
-        jump == false;
-        velocity.y += jumpPower;
-    }
-
-    velocity += acceleration * deltaTime;
-    position += velocity * deltaTime;
-=======
     velocity.y += acceleration.y * deltaTime;
     position += velocity * speed * deltaTime;
->>>>>>> Soo-V2
     
     if (entityType == PLAYER) {
         if (position.y < 0) { 
@@ -136,11 +126,6 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
         }
         for (int i = 0; i < objectCount; i++)
         {
-<<<<<<< HEAD
-            if (objects[i].entityType == FLOOR) continue;
-            if (CheckCollision(&objects[i])) {
-                position = previousPosition;
-=======
             if (CheckCollisionsX(&objects[i], objectCount)) {
                 position.x = previousPosition.x;
                 break;
@@ -155,10 +140,8 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
             if (CheckCollision(&enemies[i])) {
                 remainingLives -= 1;
                 position.z += 1.0f;
->>>>>>> Soo-V2
                 break;
             }
-            if (position.y < 1) { position.y = 1; }
         }
     }
 

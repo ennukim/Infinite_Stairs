@@ -1,11 +1,7 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (SDLProject.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-<<<<<<< HEAD
   Entity.cpp
-C:\Users\ManyMoons\git_repo\InfiniteStairs\Entity.cpp(48,14): warning C4553: '==': result of expression not used; did you intend '='?
-  main.cpp
-  Generating Code...
-=======
   main.cpp
 C:\Users\ManyMoons\git_repo\InfiniteStairs\main.cpp(149,39): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
->>>>>>> Soo-V2
+  Generating Code...
+  LINK : C:\Users\ManyMoons\git_repo\InfiniteStairs\Debug\Infinite Stairs.exe not found or not built by the last incremental link; performing full link
   SDLProject.vcxproj -> C:\Users\ManyMoons\git_repo\InfiniteStairs\Debug\Infinite Stairs.exe
