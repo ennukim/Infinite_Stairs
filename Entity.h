@@ -16,16 +16,12 @@
 
 enum EntityType { NONE, PLAYER, ENEMY, STAIR, ENDSTAIR };
 
-enum AIType { ENEMYAI };
-enum AIState { PATROL, CHASE };
-
 
 class Entity {
 public:
     EntityType entityType;
     EntityType lastCollision;
-    AIType aiType;
-    AIState aiState;
+
     
     glm::vec3 position;
     glm::vec3 velocity;
@@ -40,6 +36,7 @@ public:
     float width;
     float height;
     float depth;
+    int remainingLives;
     
     bool jump = false;
     float jumpPower = 0;
@@ -59,14 +56,11 @@ public:
     glm::mat4 modelMatrix;
     
     Entity();
-    
-    void AI(Entity* player);
-    void AIEnemy(Entity* player);
 
     bool CheckCollision(Entity* other);
     bool CheckCollisionsX(Entity* objects, int objectCount);
     bool CheckCollisionsY(Entity* objects, int objectCount);
-    void Update(float deltaTime, Entity* player, Entity* objects, int objectCount);
+    void Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Entity* enemies, int enemyCount);
     void DrawBillboard(ShaderProgram* program);
     void Render(ShaderProgram *program);
 };

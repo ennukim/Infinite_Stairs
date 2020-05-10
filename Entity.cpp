@@ -9,6 +9,7 @@ Entity::Entity()
     rotation = glm::vec3(0);
     scale = glm::vec3(1);
 
+    int remainingLives = 3;
     billboard = false;
 
     width = 1.0f;
@@ -21,37 +22,6 @@ Entity::Entity()
     jumpPower = 0;
 }
 
-void Entity::AIEnemy(Entity* player) {
-    switch (aiState) {
-    case PATROL:
-        if (player->position.x > position.x) {
-            velocity.x = 1.0f;
-        }
-        else { velocity.x = -1.0f; }
-        break;
-
-    case CHASE:
-        if (player->position.x > position.x) {
-            velocity.x = 1.0f;
-        }
-        else { velocity.x = -1.0f; }
-
-        if (player->position.y > position.y) {
-            acceleration.y = 1.0f;
-        }
-        else { acceleration.y = -1.0f; }
-        break;
-    }
-}
-
-
-void Entity::AI(Entity* player) {
-    switch (aiType) {
-    case ENEMYAI:
-        AIEnemy(player);
-    }
-
-}
 
 bool Entity::CheckCollision(Entity* other)
 {
@@ -116,7 +86,7 @@ bool Entity::CheckCollisionsX(Entity* objects, int objectCount)
     return false;
 }
 
-void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount)
+void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Entity* enemies, int enemyCount)
 {
     if (isActive == false) return;
 
@@ -132,9 +102,12 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
         float directionZ = position.z - player->position.z;
         rotation.y = glm::degrees(atan2f(directionX, directionZ));
         
-        //always move to the player
-        velocity.z = cos(glm::radians(rotation.y)) * -1.0f;
-        velocity.x = sin(glm::radians(rotation.y)) * -1.0f;
+        if (position.x >= 5.0f) {
+            velocity.x = -0.5f;
+        }
+        if (position.x <= -5.0f) {
+            velocity.x = 0.5f;
+        }
     }
 
     if (jump) {
@@ -146,7 +119,11 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
     position += velocity * speed * deltaTime;
     
     if (entityType == PLAYER) {
-        if (position.y < 0) { position.y = 0; }
+        if (position.y < 0) { 
+            position = glm::vec3(0, 3.0f, -0.9f);
+            rotation = glm::vec3(0.0f, 0, 0);
+            remainingLives -= 1;
+        }
         for (int i = 0; i < objectCount; i++)
         {
             if (CheckCollisionsX(&objects[i], objectCount)) {
@@ -155,6 +132,14 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
             }
             if (CheckCollisionsY(&objects[i], objectCount)) {
                 position.y = previousPosition.y;
+                break;
+            }
+        }
+        for (int i = 0; i < enemyCount; i++)
+        {
+            if (CheckCollision(&enemies[i])) {
+                remainingLives -= 1;
+                position.z += 1.0f;
                 break;
             }
         }
